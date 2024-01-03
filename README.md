@@ -1,4 +1,4 @@
-# globe-gore-evauation
+# globe-gore-evaluation
 
 Evaluating the distortion and fit of candidate projections for globe gores
 
