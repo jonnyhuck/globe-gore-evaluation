@@ -14,6 +14,6 @@ This code allow you to evaluate the distortion properties (shown here for a 12-g
 
 And the mathematical 'fit' of the globe to the sphere (shown here for a 12-gore globe):
 
-![fit properties](https://github.com/jonnyhuck/globe-gore-evauation/blob/main/out//12-gore-width.png)
+![fit properties](https://github.com/jonnyhuck/globe-gore-evauation/blob/main/out/12_gore_width.png)
 
 For most purposes, this analysis demonstrates that the [**Cassini Projection**](https://en.wikipedia.org/wiki/Cassini_projection) is best suited to globe production. 
