@@ -10,10 +10,10 @@ Following my [earlier interest in globes](https://jonnyhuckblog.wordpress.com/20
 
 This code allow you to evaluate the distortion properties (shown here for a 12-gore globe):
 
-![distortion properties](./out/12-Gores.png)
+![distortion properties](/out/12-Gores.png)
 
 And the mathematical 'fit' of the globe to the sphere (shown here for a 12-gore globe):
 
-![fit properties](./out/12-gore-width.png)
+![fit properties](/out/12-gore-width.png)
 
 For most purposes, this analysis demonstrates that the [**Cassini Projection**](https://en.wikipedia.org/wiki/Cassini_projection) is best suited to globe production. 
