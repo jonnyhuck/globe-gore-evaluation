@@ -117,7 +117,8 @@ def evaluate_distortion(g, transformer, minx, miny, maxx, maxy, minr, maxr, samp
     diff_sum = 0
     for e, p in zip(ellipsoidal_areas, planar_areas):
         area_indices.append(abs(e - p) / abs(e + p))
-        diff_sum += scale_factor(abs(e - p) / abs(e + p))
+        # diff_sum += scale_factor(abs(e - p) / abs(e + p))
+        diff_sum += abs(e - p) / abs(e + p)
     Ea = 1 / sample_number * diff_sum
 
 

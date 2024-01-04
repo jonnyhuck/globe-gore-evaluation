@@ -25,10 +25,15 @@ crss = {
 # open landmass data
 land = read_file("./data/ne_110m_land.shp")
 
-# construct a single gore of the specifided width at the Greenwich meridian
-best_per_gore = []
-for n_gores in [4, 6, 12, 24, 48]:
-# for n_gores in [12]:
+# construct results dictionary
+overall_distortion = dict()
+for c in crss.keys():
+    overall_distortion[c] = []
+
+# evaluate all desired gore numbers
+for n_gores in [4, 6, 12, 24, 36, 48]:
+
+    # construct a single gore of the specifided width at the Greenwich meridian
     gore_width = 360 / n_gores
     half_width = gore_width / 2
     gore = GeoSeries(Polygon([(-half_width, 90), (-half_width, -90), (half_width, -90), (half_width, 90)]), crs="EPSG:4326")
@@ -63,7 +68,7 @@ for n_gores in [4, 6, 12, 24, 48]:
         }
 
         # calculate distortion for current projection
-        Ep, Es, Ea, Ka, p, s, a = evaluate_distortion(g, transformer, minx, miny+10, maxx, maxy-10, minr=10000, 
+        Ep, Es, Ea, p, s, a = evaluate_distortion(g, transformer, minx, miny+10, maxx, maxy-10, minr=10000, 
                                                       maxr=1000000, sample_number=10000, return_distributions=True)
 
         # load into distributions
@@ -103,6 +108,10 @@ for n_gores in [4, 6, 12, 24, 48]:
     # calculate 'overall' distortion metric
     results['Total'] = (results['Distance'] + results['Shape'] + results['Area']) / 3
     
+    # load into dictionary
+    for id, row in results.iterrows():
+        overall_distortion[row['Name']].append(row.loc['Total'])
+    
     # reporting...
     # print(f"Best for Distance: {results[results.Distance == results.Distance.min()]['Name'].iloc[0]}")
     # print(f"\t{results.sort_values('Distance')['Name'].to_list()}\n")
@@ -113,13 +122,13 @@ for n_gores in [4, 6, 12, 24, 48]:
     # print(f"Best for Fit: {results[results.Width == results.Width.min()]['Name'].iloc[0]}")
     # print(f"\t{results.sort_values('Width')['Name'].to_list()}\n")
     print(f"Best overall for {n_gores} Gores: {results[results.Total == results.Total.min()]['Name'].iloc[0]}")
-    print(f"\t{results.sort_values('Total')[['Name', 'Total', 'Area', 'Shape', 'Distance']]}\n")
+    # print(f"\t{results.sort_values('Total')[['Name', 'Total', 'Area', 'Shape', 'Distance']]}\n")
+    print(f"\t{results[['Name', 'Total']]}\n")
 
 
     # plot distributions for distortion
     _, axs = plt.subplots(figsize=(17, 8), nrows=1, ncols=3)
     for ax, type in zip(axs, ["Area", "Shape", "Distance"]):
-        # plt.ylabel(f"{type} Distortion")
         ax.set_title(f"{type} Distortion ({n_gores} Gores)")
         ax.boxplot(
             x=[distributions[n][type] for n in distributions.keys()], 
@@ -134,7 +143,6 @@ for n_gores in [4, 6, 12, 24, 48]:
     # plot lines for gore width error
     _, ax = plt.subplots(figsize=(5, 8), nrows=1, ncols=1)
     plt.axvline(x=0, color='black', lw=0.8)
-    # ax.set_title(f"Gore 'Fit' error for a globe of 300 mm diameter")
     for name, data in width_plot.items():
         ax.plot(data['x'], data['y'], label=name)
     ax.xaxis.grid(True)
@@ -144,3 +152,16 @@ for n_gores in [4, 6, 12, 24, 48]:
     ax.yaxis.set_ticks(arange(0, 90, 10))
     plt.legend(loc="upper right")
     plt.savefig(f"./out/{n_gores}_gore_width.png", bbox_inches='tight')
+    plt.close('all')
+
+# plot overall distortion
+_, ax = plt.subplots(figsize=(8, 5), nrows=1, ncols=1)
+for name, values in overall_distortion.items():
+    ax.plot([4, 6, 12, 24, 36, 48], values, label=name, alpha=0.75, lw=1.25)
+ax.xaxis.grid(True)
+ax.yaxis.grid(True)
+ax.xaxis.set_ticks([0, 4, 6, 12, 24, 36, 48])
+plt.xlabel(f"Number of gores")
+plt.ylabel(f"Overall Distortion")
+plt.legend(loc="upper right")
+plt.savefig(f"./out/overall_distortion.png", bbox_inches='tight')
