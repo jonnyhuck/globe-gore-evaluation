@@ -1,0 +1,168 @@
+220mm globe:
+                    Name      Area     Shape  Distance           Fit     Total
+0                Cassini  0.090092  0.054581  0.078173  7.407823e-16  0.036168
+1              Polyconic  0.088366  0.053603  0.076635  1.450337e-02  0.042744
+2  Rectangular Polyconic  0.082714  0.079063  0.074941  1.906122e-01  0.135750
+3   Ginzburg & Salmanova  0.063478  0.168526  0.073873  3.507025e-01  0.233352
+4             Sinusoidal  0.002596  0.314739  0.102761  4.669946e-01  0.312831
+5    Transverse Mercator  0.186580  0.033896  0.101030  5.111137e-01  0.310676
+
+6 gores fit: Cassini; overall score: Cassini
+
+
+                    Name      Area     Shape  Distance           Fit     Total
+0                Cassini  0.093558  0.025725  0.043033  4.859935e-15  0.029821
+1              Polyconic  0.093742  0.026001  0.042981  3.592237e-03  0.031732
+2  Rectangular Polyconic  0.099092  0.042861  0.042226  2.235114e-01  0.147244
+3   Ginzburg & Salmanova  0.070775  0.148742  0.046002  3.524493e-01  0.231104
+4             Sinusoidal  0.010547  0.293839  0.072040  4.697534e-01  0.310973
+5    Transverse Mercator  0.198055  0.029094  0.049606  5.260755e-01  0.319825
+
+12 gores fit: Cassini; overall score: Cassini
+
+
+                    Name      Area     Shape  Distance           Fit     Total
+0                Cassini  0.038103  0.008378  0.022855  2.009771e-14  0.011620
+1              Polyconic  0.037914  0.008412  0.023367  9.157379e-04  0.012039
+2  Rectangular Polyconic  0.057432  0.018797  0.023251  2.356784e-01  0.136896
+3   Ginzburg & Salmanova  0.035228  0.092562  0.029778  3.510399e-01  0.207467
+4             Sinusoidal  0.014687  0.187232  0.047989  4.744367e-01  0.287698
+5    Transverse Mercator  0.090128  0.015900  0.025656  5.253066e-01  0.289160
+
+24 gores fit: Cassini; overall score: Cassini
+
+
+360mm globe:
+                    Name      Area     Shape  Distance           Fit     Total
+0                Cassini  0.092809  0.055847  0.067620  7.421036e-16  0.037164
+1              Polyconic  0.087501  0.052823  0.066720  1.434641e-02  0.042254
+2  Rectangular Polyconic  0.083192  0.078621  0.063810  1.892765e-01  0.135092
+3   Ginzburg & Salmanova  0.062416  0.166114  0.062711  3.515809e-01  0.232923
+4             Sinusoidal  0.002621  0.314467  0.089389  4.655088e-01  0.312026
+5    Transverse Mercator  0.181564  0.033448  0.085860  5.090050e-01  0.308255
+
+6 gores fit: Cassini; overall score: Cassini
+
+
+                    Name      Area     Shape  Distance           Fit     Total
+0                Cassini  0.093403  0.024917  0.042083  4.956851e-15  0.029580
+1              Polyconic  0.092873  0.024999  0.042000  3.611590e-03  0.031274
+2  Rectangular Polyconic  0.097793  0.041695  0.042119  2.218032e-01  0.145774
+3   Ginzburg & Salmanova  0.071329  0.144300  0.046388  3.566097e-01  0.232212
+4             Sinusoidal  0.010367  0.283412  0.071289  4.661874e-01  0.306539
+5    Transverse Mercator  0.197754  0.028133  0.049636  5.245836e-01  0.318764
+
+12 gores fit: Cassini; overall score: Cassini
+
+
+                    Name      Area     Shape  Distance           Fit     Total
+0                Cassini  0.042116  0.008467  0.022941  2.017107e-14  0.012646
+1              Polyconic  0.042375  0.008602  0.023125  9.080378e-04  0.013198
+2  Rectangular Polyconic  0.065174  0.019390  0.022979  2.323986e-01  0.137340
+3   Ginzburg & Salmanova  0.038947  0.093821  0.028830  3.563764e-01  0.211380
+4             Sinusoidal  0.015805  0.184544  0.047682  4.669582e-01  0.283566
+5    Transverse Mercator  0.100301  0.016247  0.024895  5.266542e-01  0.292464
+
+24 gores fit: Cassini; overall score: Cassini
+
+
+500mm globe:
+                    Name      Area     Shape  Distance           Fit     Total
+0                Cassini  0.089925  0.054800  0.073410  7.522718e-16  0.036181
+1              Polyconic  0.087846  0.053622  0.071771  1.442314e-02  0.042578
+2  Rectangular Polyconic  0.081598  0.078073  0.069349  1.910413e-01  0.135439
+3   Ginzburg & Salmanova  0.062174  0.168305  0.067780  3.551979e-01  0.235219
+4             Sinusoidal  0.002610  0.313438  0.095494  4.658753e-01  0.311950
+5    Transverse Mercator  0.184863  0.034115  0.092997  5.046356e-01  0.307062
+
+6 gores fit: Cassini; overall score: Cassini
+
+
+                    Name      Area     Shape  Distance           Fit     Total
+0                Cassini  0.092849  0.025751  0.038165  4.928674e-15  0.029650
+1              Polyconic  0.093903  0.026246  0.037213  3.594763e-03  0.031835
+2  Rectangular Polyconic  0.101561  0.044414  0.037967  2.254355e-01  0.149212
+3   Ginzburg & Salmanova  0.072237  0.152486  0.041453  3.504089e-01  0.231385
+4             Sinusoidal  0.010558  0.294408  0.063962  4.673354e-01  0.309909
+5    Transverse Mercator  0.198660  0.029581  0.043023  5.264963e-01  0.320308
+
+12 gores fit: Cassini; overall score: Cassini
+
+
+                    Name      Area     Shape  Distance           Fit     Total
+0                Cassini  0.041272  0.008530  0.022702  1.985455e-14  0.012451
+1              Polyconic  0.039902  0.008341  0.022970  8.983100e-04  0.012510
+2  Rectangular Polyconic  0.061397  0.018836  0.022807  2.292832e-01  0.134700
+3   Ginzburg & Salmanova  0.038248  0.094817  0.027898  3.528336e-01  0.209683
+4             Sinusoidal  0.015570  0.185685  0.047340  4.636040e-01  0.282116
+5    Transverse Mercator  0.098058  0.016268  0.024630  5.265526e-01  0.291858
+
+24 gores fit: Cassini; overall score: Cassini
+
+
+650mm globe:
+                    Name      Area     Shape  Distance           Fit     Total
+0                Cassini  0.092607  0.055427  0.076374  7.637918e-16  0.037009
+1              Polyconic  0.088035  0.052832  0.074375  1.434368e-02  0.042389
+2  Rectangular Polyconic  0.081490  0.077349  0.071596  1.926630e-01  0.136041
+3   Ginzburg & Salmanova  0.063138  0.164902  0.070709  3.525210e-01  0.233271
+4             Sinusoidal  0.002602  0.313423  0.101044  4.698004e-01  0.313906
+5    Transverse Mercator  0.186353  0.033577  0.096362  5.094281e-01  0.309697
+
+6 gores fit: Cassini; overall score: Cassini
+
+
+                    Name      Area     Shape  Distance           Fit     Total
+0                Cassini  0.092919  0.025123  0.036629  4.876384e-15  0.029511
+1              Polyconic  0.091912  0.025063  0.036233  3.628708e-03  0.031058
+2  Rectangular Polyconic  0.099868  0.042399  0.036044  2.218790e-01  0.146506
+3   Ginzburg & Salmanova  0.069850  0.145317  0.040964  3.519972e-01  0.229790
+4             Sinusoidal  0.010408  0.283603  0.062212  4.723941e-01  0.309700
+5    Transverse Mercator  0.194123  0.027975  0.043101  5.281674e-01  0.319608
+
+12 gores fit: Cassini; overall score: Cassini
+
+
+                    Name      Area     Shape  Distance           Fit     Total
+0                Cassini  0.039025  0.008337  0.021789  1.968038e-14  0.011841
+1              Polyconic  0.039149  0.008454  0.021208  9.220212e-04  0.012362
+2  Rectangular Polyconic  0.060176  0.019022  0.021060  2.321263e-01  0.135863
+3   Ginzburg & Salmanova  0.036494  0.092828  0.026931  3.545326e-01  0.209597
+4             Sinusoidal  0.014860  0.185833  0.042944  4.666324e-01  0.283489
+5    Transverse Mercator  0.092126  0.015792  0.022755  5.295270e-01  0.291743
+
+24 gores fit: Cassini; overall score: Cassini
+
+
+800mm globe:
+                    Name      Area     Shape  Distance           Fit     Total
+0                Cassini  0.091110  0.054589  0.068611  7.569544e-16  0.036425
+1              Polyconic  0.086985  0.052298  0.066990  1.449869e-02  0.042070
+2  Rectangular Polyconic  0.083991  0.078461  0.064713  1.915688e-01  0.136397
+3   Ginzburg & Salmanova  0.064824  0.168438  0.064171  3.556949e-01  0.236163
+4             Sinusoidal  0.002656  0.314787  0.091424  4.596903e-01  0.309206
+5    Transverse Mercator  0.185031  0.033668  0.088442  5.148614e-01  0.312105
+
+6 gores fit: Cassini; overall score: Cassini
+
+
+                    Name      Area     Shape  Distance           Fit     Total
+0                Cassini  0.092511  0.025200  0.047351  4.917862e-15  0.029428
+1              Polyconic  0.092333  0.025384  0.047073  3.602705e-03  0.031230
+2  Rectangular Polyconic  0.098794  0.042370  0.047252  2.261326e-01  0.148357
+3   Ginzburg & Salmanova  0.070627  0.148292  0.051189  3.559036e-01  0.232682
+4             Sinusoidal  0.010383  0.281316  0.077902  4.691823e-01  0.307516
+5    Transverse Mercator  0.198154  0.028652  0.053639  5.261979e-01  0.319800
+
+12 gores fit: Cassini; overall score: Cassini
+
+
+                    Name      Area     Shape  Distance           Fit     Total
+0                Cassini  0.038745  0.008694  0.023261  2.007866e-14  0.011860
+1              Polyconic  0.037748  0.008531  0.023103  9.082318e-04  0.012024
+2  Rectangular Polyconic  0.058298  0.019403  0.022828  2.324961e-01  0.135673
+3   Ginzburg & Salmanova  0.035241  0.094948  0.028808  3.547727e-01  0.209933
+4             Sinusoidal  0.014350  0.186306  0.046993  4.686478e-01  0.284488
+5    Transverse Mercator  0.091404  0.016436  0.024674  5.263245e-01  0.290122
+
+24 gores fit: Cassini; overall score: Cassini

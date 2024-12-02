@@ -1,16 +1,46 @@
 """
-* Various functions for evaluating map projection distortion
+* Various functions for evaluating map projection distortion for SPHERICAL models
 *
 * If you run this file directly, it will print it will print out ideal proportional gore 
 *    widths by latitude
 *
 * @author jonnyhuck
 """
-
 from numpy import arange
 from numpy.random import uniform
 from shapely.geometry import Polygon
-from math import hypot, sin, cos, radians, atan2, sqrt, pi
+from math import hypot, sin, cos, radians, atan2, sqrt, pi, degrees, asin
+
+def spherical_forward(lon1, lat1, bearing, distance, R=6371000):
+    """
+    * Calculate the destination point given an initial point, a bearing, and a distance on a sphere
+    """
+    # Convert latitude, longitude, and bearing to radians
+    lon1 = radians(lon1)
+    lat1 = radians(lat1)
+    bearing = radians(bearing)
+
+    # Angular distance in radians
+    angular_distance = distance / R
+
+    # Calculate the destination latitude
+    lat2 = asin(sin(lat1) * cos(angular_distance) + cos(lat1) * sin(angular_distance) * cos(bearing))
+
+    # Calculate the destination longitude
+    lon2 = lon1 + atan2(sin(bearing) * sin(angular_distance) * cos(lat1), cos(angular_distance) - sin(lat1) * sin(lat2))
+
+    # Convert to degrees, ensure correct range and return
+    return (degrees(lon2)+ 180) % 360 - 180, degrees(lat2)
+
+
+def sfwd(lon1s, lat1s, bearings, distances, R=6371000):
+    """ 
+    * Convenience version of the above to match functionality of g.fwd() 
+    """
+    out = [spherical_forward(lon1, lat1, bearing, distance, R) for lon1, lat1, bearing, distance in zip(lon1s, lat1s, bearings, distances)]
+    lons = [o[0] for o in out]
+    lats = [o[1] for o in out]
+    return lons, lats
 
 
 def offset(x, y, distance, direction):
@@ -36,12 +66,11 @@ def calibrate_metric(E_max, E_min, E):
     return 1 / (E_max - E_min) * (E - E_min)
 
 
-def spherical_haversine_distance(x1, y1, x2, y2, R = 6371000):
+def spherical_haversine_distance(x1, y1, x2, y2, R=6371000):
     """
     Calculate the 'as the crow flies' distance between two locations along a sphere using
         the Haversine equation.
     """
-
     # convert to radians (as this is what the math functions expect)
     a1 = radians(y1)
     b1 = radians(x1)
@@ -60,7 +89,14 @@ def spherical_haversine_distance(x1, y1, x2, y2, R = 6371000):
     return c * float(R)
 
 
-def evaluate_distortion(g, transformer, minx, miny, maxx, maxy, minr, maxr, sample_number, return_distributions=False):
+def sdist(lons, lats, R=6371000):
+    """
+    * Convenience version of the above to match functionality of g.line_length() 
+    """
+    return spherical_haversine_distance(lons[0], lats[0], lons[1], lats[1], R)
+
+
+def evaluate_distortion(transformer, minx, miny, maxx, maxy, minr, maxr, sample_number, vertices=16, return_distributions=False):
     """
     * Calculate a selection of distortion measures, based on Canters et al. (2005)
     *  and Gosling & Symeonakis (2020)
@@ -74,59 +110,45 @@ def evaluate_distortion(g, transformer, minx, miny, maxx, maxy, minr, maxr, samp
     rs = uniform(low=minr, high=maxr, size=sample_number)
 
     # offset distances
-    forward_azimuths = arange(0, 360, 22.5)
-    n = len(forward_azimuths)
+    forward_azimuths = arange(0, 360, 360/vertices)
 
     # loop through the points
-    planar_areas = []
     area_indices = []
     shape_indices = []
     distance_indices = []
-    ellipsoidal_areas = []
     for x, y, r in zip(xs, ys, rs):
 
-        # construct a circle around the centre point on the ellipsoid
-        lons, lats = g.fwd([x]*n, [y]*n, forward_azimuths, [r]*n)[:2]
+        # construct a circle around the centre point on the sphere
+        lons, lats = sfwd([x]*vertices, [y]*vertices, forward_azimuths, [r]*vertices)[:2]
 
         # project the result, calculate area, append to the list
-        e_coords = [ transformer.transform(lon, lat, direction='FORWARD') for lon, lat in zip(lons, lats) ]
-        ellipsoidal_areas.append(Polygon(e_coords).area)
+        s_coords = [ transformer.transform(lon, lat, direction='FORWARD') for lon, lat in zip(lons, lats) ]
+        spherical_area = Polygon(s_coords).area
 
         # transform the centre point to the projected CRS
         px, py = transformer.transform(x, y, direction='FORWARD')
 
         # construct a circle around the projected point on a plane, calculate area, append to list
-        p_coords = [ offset(px, py, r, az) for az in forward_azimuths ]
-        planar_areas.append(Polygon(p_coords).area)
+        planar_area = Polygon([ offset(px, py, r, az) for az in forward_azimuths ]).area
 
-        # get radial distances frpm the centre to each of the 16 points on the circle
-        ellipsoidal_radial_distances = [ hypot(px - ex, py - ey) for ex, ey in e_coords ]
+        # get area index
+        area_indices.append(abs(spherical_area - planar_area) / abs(spherical_area + planar_area))
 
-        # get the sum of the distances, and the expected value for each distance
-        total_radial_dist = sum(ellipsoidal_radial_distances)
-        expected_distance = total_radial_dist / n
+        # get radial distances from the centre to each of the 16 points on the circle
+        spherical_radial_distances = [ hypot(px - sx, py - sy) for sx, sy in s_coords ]
 
-        # get the difference between the actual and expected radial distance for each 'spoke'
-        shape_distortion = [ abs((expected_distance / total_radial_dist) - (d / total_radial_dist)) for d in ellipsoidal_radial_distances ]
+        # get the absolute proportional difference between the expected and actual radial distance for each 'spoke'
+        shape_distortion = [abs((1 / vertices) - (d / sum(spherical_radial_distances))) for d in spherical_radial_distances]
         shape_indices.append(sum(shape_distortion))
 
-    # calculate shape distortion
-    Es = sum(shape_indices) / len(shape_indices)
+    # calculate areal & shape distortion
+    Ea = 1 / sample_number * sum(area_indices)      # as per equation
+    Es = sum(shape_indices) / len(shape_indices)    # mean value
 
-    # calculate areal distortion (convert to Ka for each index, not all together at the end)
-    diff_sum = 0
-    for e, p in zip(ellipsoidal_areas, planar_areas):
-        area_indices.append(abs(e - p) / abs(e + p))
-        # diff_sum += scale_factor(abs(e - p) / abs(e + p))
-        diff_sum += abs(e - p) / abs(e + p)
-    Ea = 1 / sample_number * diff_sum
-
-
+    
     ''' FINITE DISTANCE DISTORTION - as per Gosling & Symeonakis (2020) '''
 
     # loop once per sample required
-    planar_distances = []
-    ellipsoidal_distances = []
     for _ in range(sample_number):
 
         # get two random locations (x and y separately)
@@ -134,33 +156,68 @@ def evaluate_distortion(g, transformer, minx, miny, maxx, maxy, minr, maxr, samp
         ys = uniform(low=miny, high=maxy, size=2)
 
         # calculate the distance along the ellipsoid
-        ellipsoidal_distances.append(g.line_length(xs, ys))
+        spherical_distance = sdist(xs, ys)
 
         # transform the coordinates
         origin = transformer.transform(xs[0], ys[0], direction='FORWARD')
         destination = transformer.transform(xs[1], ys[1], direction='FORWARD')
 
         # calculate the planar distance
-        planar_distances.append(hypot(origin[0] - destination[0], origin[1] - destination[1]))
+        planar_distance = hypot(origin[0] - destination[0], origin[1] - destination[1])
+        
+        # calculate distance index 
+        distance_indices.append(abs(spherical_distance - planar_distance) / abs (spherical_distance + planar_distance))
 
     # calculate distance distortion
-    diff_sum = 0
-    for e, p in zip(ellipsoidal_distances, planar_distances):
-        distance_indices.append(abs(e - p) / abs (e + p))
-        diff_sum += distance_indices[-1]
-    Ep = 1 / sample_number * diff_sum
+    Ep = 1 / sample_number * sum(distance_indices)
 
-    # return all of the measures (and data if required)
+    # get min max for calibration if needed and return
     if return_distributions:
         return Ep, Es, Ea, distance_indices, shape_indices, area_indices
+    
+    # otherwise just return indices
     else:
         return Ep, Es, Ea
 
 
-def evaluate_gore_width(transformer, gore_width, min_lat=0, max_lat=90, interval=10, units="perc", globe_diameter=None):
+def evaluate_gore_fit(transformer, gore_width, sample_number, min_lat=0, max_lat=89, return_distributions=False):
     """
-    * Compare the width of each gore at each interval of latitude to the same distance on the 
-    *    sphere (not ellipsoid, as we are evaluating for the globe!)
+    * Provides an evaluation of gore fit to the sphere that is analogous to the measures used in 
+    *   `evaluate_distortion()`. This provides a single value, as opposed to `evaluate_gore_width()`, 
+    *   which evaluates by latitude.
+    """
+     # get the distance from the central meridian to the gore edge
+    half_width = gore_width / 2
+
+    # loop through each line of latitude
+    distance_indices = []
+    for lat in uniform(low=min_lat, high=max_lat, size=sample_number):
+
+        # get spherical distance across gore
+        spherical_distance = spherical_haversine_distance(-half_width, lat, half_width, lat)
+
+        # get projected distance
+        x1, y1 = transformer.transform(-half_width, lat, direction='FORWARD')
+        x2, y2 = transformer.transform(half_width, lat, direction='FORWARD')
+        projected_distance = hypot(x1-x2, y1-y2)
+
+        # get distance index
+        distance_indices.append(abs(spherical_distance - projected_distance) / abs (spherical_distance + projected_distance))
+    
+    # get fit metric
+    Ef = 1 / sample_number * sum(distance_indices)
+
+    # return total absolute error (and data to plot if required)
+    if return_distributions:
+        return Ef, distance_indices
+    else:
+        return Ef
+
+
+def evaluate_gore_width(transformer, gore_width, min_lat=0, max_lat=90, interval=10, units="prop", globe_diameter=None):
+    """
+    * Compare the width of each gore at each interval of latitude to the same distance across the sphere
+    * Calculations are made for each 
     """
 
     # get the distance from the central meridian to the gore edge
@@ -177,7 +234,7 @@ def evaluate_gore_width(transformer, gore_width, min_lat=0, max_lat=90, interval
         # get spherical distance across gore
         spherical_dist = spherical_haversine_distance(-half_width, lat, half_width, lat)
 
-        # get projected points and distance
+        # get projected distance
         x1, y1 = transformer.transform(-half_width, lat, direction='FORWARD')
         x2, y2 = transformer.transform(half_width, lat, direction='FORWARD')
         projected_dist = hypot(x1-x2, y1-y2)
@@ -188,60 +245,32 @@ def evaluate_gore_width(transformer, gore_width, min_lat=0, max_lat=90, interval
             distance_indices.append((projected_dist - spherical_dist) / spherical_dist)
         
         elif units == 'm':
-            # this is the difference in m (in the world)
+            # this is the difference in m (equivelant distance 'in the world')
             distance_indices.append(projected_dist - spherical_dist)
         
         elif units == 'mm':
             # make sure we have a globe diameter
             if globe_diameter is None:
-                print("units must be one of `prop`, `m`, `mm`")
+                print("please provide a globe diameter!")
                 exit()
 
             # this is the difference in mm (on the printed globe)
             distance_indices.append((((projected_dist - spherical_dist) / spherical_dist) *  # difference as a proportion
                                     (2 * pi * globe_diameter / 2)) /                         # circumfrence of the globe
-                                    (360 / gore_width)                                       # proportion of the globe copvered by the gore
+                                    (360 / gore_width)                                       # proportion of the globe covered by the gore
                                     )
-
         else:
-            print("units must be one of perc, m, mm")
+            print("units must be one of prop, m, mm")
             exit()
 
     # return total absolute error (and data to plot if required)
     return latitudes, distance_indices
     
 
-def get_optimal_gore_width(interval=5):
-    """
-    * For use with flex projector to produce a 'perfect' gore projection
-    * 
-    * Multiply this number by the globe circumfrence to get the size on paper, or 
-    *    by the gore width at the equator to get the actual width of the gores.
-    """
-
-    # get spherical distance across globe
-    equator_dist = \
-        spherical_haversine_distance(0, 0, 90, 0) + \
-        spherical_haversine_distance(90, 0, 180, 0) + \
-        spherical_haversine_distance(180, 0, -90, 0) + \
-        spherical_haversine_distance(-90, 0, 0, 0)
-    
-    # for each latitude in interval
-    for lat in list(range(0, 91, interval)):
-        
-        # get length of parallel
-        spherical_dist = \
-            spherical_haversine_distance(0, lat, 90, lat) + \
-            spherical_haversine_distance(90, lat, 180, lat) + \
-            spherical_haversine_distance(180, lat, -90, lat) + \
-            spherical_haversine_distance(-90, lat, 0, lat)
-    
-        # report as proportion of equator dist
-        print(f"{lat}: {spherical_dist / equator_dist}")
-
+# evaluate globe projection, just for testing
 if __name__ == "__main__":
-    """
-    * If you run this file directly, it will print out ideal proportional gore 
-    *   widths by latitude
-    """
-    get_optimal_gore_width()
+    from globe_gore_projection import Transformer as gTransformer
+    transformer = gTransformer(6371000, 2)
+    lats, errors = evaluate_gore_width(transformer, 360/12, max_lat=85, interval=5, units='mm', globe_diameter=500)
+    for l, w in zip(lats, errors):
+        print(l, w)
